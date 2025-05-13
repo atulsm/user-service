@@ -28,6 +28,41 @@ Password hashing with bcrypt
 Graceful server shutdown
 
 
+# Running Tests
+
+The project includes a comprehensive test suite. You can run tests using the provided test script:
+
+```bash
+# Run all tests
+./scripts/test.sh
+
+# Run tests with coverage report
+./scripts/test.sh -c
+
+# Run tests in verbose mode
+./scripts/test.sh -v
+
+# Run tests with race detector
+./scripts/test.sh -r
+
+# Run tests for a specific package
+./scripts/test.sh -p ./internal/handlers
+
+# Run tests with multiple options
+./scripts/test.sh -cvr
+
+# Show help
+./scripts/test.sh -h
+```
+
+The test script provides the following options:
+- `-c`: Generate coverage report (creates coverage/coverage.html)
+- `-v`: Run tests in verbose mode
+- `-r`: Run tests with race detector
+- `-s`: Run tests in short mode
+- `-p`: Run tests for specific package
+- `-h`: Show help message
+
 
 # The service contains all the necessary endpoints:
 
