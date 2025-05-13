@@ -4,22 +4,32 @@ import (
 	"net/http"
 	"strconv"
 
-	"atulsm/userservice/internal/middleware"
 	"atulsm/userservice/internal/models"
 	"atulsm/userservice/internal/repository"
-	"atulsm/userservice/pkg/utils"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
 
-type UserHandler struct {
-	repo repository.UserRepository
+type TokenGenerator interface {
+	GenerateToken(userID string) (string, error)
 }
 
-func NewUserHandler(repo repository.UserRepository) *UserHandler {
+type PasswordHasher interface {
+	CheckPasswordHash(password, hash string) bool
+}
+
+type UserHandler struct {
+	repo     repository.UserRepository
+	tokenGen TokenGenerator
+	pwHasher PasswordHasher
+}
+
+func NewUserHandler(repo repository.UserRepository, tokenGen TokenGenerator, pwHasher PasswordHasher) *UserHandler {
 	return &UserHandler{
-		repo: repo,
+		repo:     repo,
+		tokenGen: tokenGen,
+		pwHasher: pwHasher,
 	}
 }
 
@@ -37,7 +47,7 @@ func (h *UserHandler) Register(c *gin.Context) {
 	}
 
 	// Generate token
-	token, err := middleware.GenerateToken(user.ID.String())
+	token, err := h.tokenGen.GenerateToken(user.ID.String())
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to generate token"})
 		return
@@ -68,13 +78,13 @@ func (h *UserHandler) Login(c *gin.Context) {
 		return
 	}
 
-	if !utils.CheckPasswordHash(req.Password, user.Password) {
+	if !h.pwHasher.CheckPasswordHash(req.Password, user.Password) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid credentials"})
 		return
 	}
 
 	// Generate token
-	token, err := middleware.GenerateToken(user.ID.String())
+	token, err := h.tokenGen.GenerateToken(user.ID.String())
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to generate token"})
 		return

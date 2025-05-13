@@ -13,6 +13,7 @@ import (
 	"atulsm/userservice/internal/handlers"
 	"atulsm/userservice/internal/middleware"
 	"atulsm/userservice/internal/repository"
+	"atulsm/userservice/pkg/utils"
 
 	"github.com/gin-gonic/gin"
 )
@@ -35,8 +36,12 @@ func main() {
 	router.Use(gin.Recovery())
 	router.Use(gin.Logger())
 
-	// Initialize handlers
-	userHandler := handlers.NewUserHandler(repo)
+	// Initialize handlers with all required dependencies
+	userHandler := handlers.NewUserHandler(
+		repo,
+		middleware.NewTokenGenerator(cfg.JWTSecret),
+		utils.NewPasswordHasher(),
+	)
 
 	// Public routes
 	router.POST("/api/users/register", userHandler.Register)

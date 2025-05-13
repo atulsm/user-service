@@ -43,11 +43,20 @@ func AuthMiddleware() gin.HandlerFunc {
 	}
 }
 
-func GenerateToken(userID string) (string, error) {
-	// Get JWT secret from environment
-	secret := os.Getenv("JWT_SECRET")
-	if secret == "" {
-		return "", errors.New("JWT_SECRET environment variable is not set")
+// TokenGenerator generates JWT tokens
+type TokenGenerator struct {
+	secret string
+}
+
+// NewTokenGenerator creates a new TokenGenerator with the given secret
+func NewTokenGenerator(secret string) *TokenGenerator {
+	return &TokenGenerator{secret: secret}
+}
+
+// GenerateToken generates a new JWT token for the given user ID
+func (t *TokenGenerator) GenerateToken(userID string) (string, error) {
+	if t.secret == "" {
+		return "", errors.New("JWT secret is not set")
 	}
 
 	// Create token
@@ -58,7 +67,7 @@ func GenerateToken(userID string) (string, error) {
 	})
 
 	// Sign token
-	tokenString, err := token.SignedString([]byte(secret))
+	tokenString, err := token.SignedString([]byte(t.secret))
 	if err != nil {
 		return "", err
 	}
