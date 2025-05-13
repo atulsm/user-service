@@ -1,36 +1,110 @@
-# user-service
-High performant Go API server for a user service. This will include standard functionality like user registration, authentication, profile management, and CRUD operations.
+# User Service 🚀
 
-This service includes:
+A high-performance Go API server providing comprehensive user management functionality including registration, authentication, profile management, and CRUD operations.
 
-# User Management
+## 📋 Features
 
-Registration
-Authentication with JWT
-Profile management
-User listing with pagination
-User deletion
+### User Management
+- 👤 User registration and authentication
+- 🔐 JWT-based authentication
+- 👥 Profile management
+- 📃 User listing with pagination
+- 🗑️ User account deletion
 
+### Technical Stack
+- 🛠️ RESTful API with Gin framework
+- 🗄️ PostgreSQL database integration
+- 🔒 Secure password hashing with bcrypt
+- 🔄 Graceful server shutdown
+- 📦 Well-organized project structure
 
-# Project Structure
+## 🏗️ Project Structure
 
-Well-organized Go project following standard practices
-Clear separation of concerns (handlers, repositories, models)
-Configuration management
+```
+user-service/
+├── cmd/
+│   └── server/          # Application entry point
+├── internal/
+│   ├── config/          # Configuration management
+│   ├── handlers/        # HTTP request handlers
+│   ├── middleware/      # HTTP middleware
+│   ├── models/          # Data models
+│   └── repository/      # Database operations
+├── pkg/
+│   └── utils/          # Shared utilities
+├── scripts/
+│   └── test.sh         # Test runner script
+└── README.md
+```
 
+## 🚀 Getting Started
 
-# Technical Features
+### Prerequisites
+- Go 1.16 or higher
+- PostgreSQL database
+- Git
 
-RESTful API with Gin framework
-PostgreSQL database integration
-JWT-based authentication
-Password hashing with bcrypt
-Graceful server shutdown
+### Environment Variables
+```bash
+# Required in production
+export DATABASE_URL="postgres://postgres:postgres@localhost:5432/userservice?sslmode=disable"
+export JWT_SECRET="your-secure-random-string"
 
+# Optional
+export PORT="8080"  # defaults to 8080
+```
 
-# Running Tests
+### Database Setup
+```sql
+-- Connect to PostgreSQL
+psql -U postgres
 
-The project includes a comprehensive test suite. You can run tests using the provided test script:
+-- Create database
+CREATE DATABASE userservice;
+\c userservice
+
+-- Create users table
+CREATE TABLE users (
+    id UUID PRIMARY KEY,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    first_name VARCHAR(100) NOT NULL,
+    last_name VARCHAR(100) NOT NULL,
+    created_at TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP NOT NULL
+);
+
+-- Create index
+CREATE INDEX idx_users_email ON users(email);
+```
+
+### Building and Running
+```bash
+# Install dependencies
+go mod tidy
+
+# Build the service
+go build -o userservice ./cmd/server
+
+# Run the service
+./userservice
+```
+
+## 🔍 API Endpoints
+
+| Method | Endpoint | Description | Authentication |
+|--------|----------|-------------|----------------|
+| POST | `/api/users/register` | Create new user account | Public |
+| POST | `/api/users/login` | Authenticate and get JWT token | Public |
+| GET | `/api/users/profile` | Get current user profile | Required |
+| PUT | `/api/users/profile` | Update user profile | Required |
+| GET | `/api/users` | List all users | Required |
+| GET | `/api/users/:id` | Get specific user | Required |
+| DELETE | `/api/users/:id` | Delete user | Required |
+
+## 🧪 Running Tests
+
+The project includes a comprehensive test suite with a convenient test runner script:
 
 ```bash
 # Run all tests
@@ -50,61 +124,19 @@ The project includes a comprehensive test suite. You can run tests using the pro
 
 # Run tests with multiple options
 ./scripts/test.sh -cvr
-
-# Show help
-./scripts/test.sh -h
 ```
 
-The test script provides the following options:
-- `-c`: Generate coverage report (creates coverage/coverage.html)
-- `-v`: Run tests in verbose mode
-- `-r`: Run tests with race detector
-- `-s`: Run tests in short mode
-- `-p`: Run tests for specific package
-- `-h`: Show help message
+### Test Options
+| Option | Description |
+|--------|-------------|
+| `-c` | Generate coverage report (creates coverage/coverage.html) |
+| `-v` | Run tests in verbose mode |
+| `-r` | Run tests with race detector |
+| `-s` | Run tests in short mode |
+| `-p` | Run tests for specific package |
+| `-h` | Show help message |
 
+## 📄 License
 
-# The service contains all the necessary endpoints:
-
-POST /api/users/register: Create new user account
-POST /api/users/login: Authenticate and get JWT token
-GET /api/users/profile: Get current user profile (protected)
-PUT /api/users/profile: Update user profile (protected)
-GET /api/users: List all users (protected)
-GET /api/users/:id: Get specific user (protected)
-DELETE /api/users/:id: Delete user (protected)
-
-# build
-go mod tidy
-go build -o userservice ./cmd/server
-
-# database setup
-psql -U postgres
-CREATE DATABASE userservice;
-\c userservice
-CREATE TABLE users (
-  id UUID PRIMARY KEY,
-  email VARCHAR(255) UNIQUE NOT NULL,
-  password_hash VARCHAR(255) NOT NULL,
-  first_name VARCHAR(100) NOT NULL,
-  last_name VARCHAR(100) NOT NULL,
-  created_at TIMESTAMP NOT NULL,
-  updated_at TIMESTAMP NOT NULL
-);
-CREATE INDEX idx_users_email ON users(email);
-\q
-
-# To run this service, you'll need:
-
-Go installed (1.16+)
-PostgreSQL database
-Set environment variables:
-
-DATABASE_URL
-JWT_SECRET
-PORT (optional, defaults to 8080)
-
-export DATABASE_URL="postgres://postgres:postgres@localhost:5432/userservice?sslmode=disable"
-export JWT_SECRET="your-secure-random-string"
-./userservice
+This project is licensed under the MIT License - see the LICENSE file for details.
 
