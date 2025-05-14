@@ -103,11 +103,12 @@ func TestRegister(t *testing.T) {
 	handler := NewUserHandler(mockRepo, mockTokenGen, mockPwHasher)
 
 	testUser := &models.User{
-		ID:        uuid.New(),
-		Email:     "test@example.com",
-		FirstName: "John",
-		LastName:  "Doe",
-		CreatedAt: time.Now(),
+		ID:          uuid.New(),
+		Email:       "test@example.com",
+		FirstName:   "John",
+		LastName:    "Doe",
+		PhoneNumber: "+1234567890",
+		CreatedAt:   time.Now(),
 	}
 
 	tests := []struct {
@@ -120,10 +121,11 @@ func TestRegister(t *testing.T) {
 		{
 			name: "successful registration",
 			requestBody: map[string]interface{}{
-				"email":      "test@example.com",
-				"password":   "password123",
-				"first_name": "John",
-				"last_name":  "Doe",
+				"email":        "test@example.com",
+				"password":     "password123",
+				"first_name":   "John",
+				"last_name":    "Doe",
+				"phone_number": "+1234567890",
 			},
 			mockSetup: func() {
 				mockRepo.On("CreateUser", mock.AnythingOfType("*models.RegisterRequest")).Return(testUser, nil)
@@ -132,11 +134,12 @@ func TestRegister(t *testing.T) {
 			expectedBody: map[string]interface{}{
 				"token": "test-jwt-token",
 				"user": map[string]interface{}{
-					"id":         testUser.ID.String(),
-					"email":      testUser.Email,
-					"first_name": testUser.FirstName,
-					"last_name":  testUser.LastName,
-					"created_at": testUser.CreatedAt.Format(time.RFC3339Nano),
+					"id":           testUser.ID.String(),
+					"email":        testUser.Email,
+					"first_name":   testUser.FirstName,
+					"last_name":    testUser.LastName,
+					"phone_number": testUser.PhoneNumber,
+					"created_at":   testUser.CreatedAt.Format(time.RFC3339Nano),
 				},
 			},
 		},
@@ -144,6 +147,18 @@ func TestRegister(t *testing.T) {
 			name: "missing required field",
 			requestBody: map[string]interface{}{
 				"email": "test@example.com",
+			},
+			mockSetup:      func() {},
+			expectedStatus: http.StatusBadRequest,
+		},
+		{
+			name: "invalid phone number",
+			requestBody: map[string]interface{}{
+				"email":        "test@example.com",
+				"password":     "password123",
+				"first_name":   "John",
+				"last_name":    "Doe",
+				"phone_number": "invalid-phone",
 			},
 			mockSetup:      func() {},
 			expectedStatus: http.StatusBadRequest,
@@ -184,12 +199,13 @@ func TestLogin(t *testing.T) {
 	handler := NewUserHandler(mockRepo, mockTokenGen, mockPwHasher)
 
 	testUser := &models.User{
-		ID:        uuid.New(),
-		Email:     "test@example.com",
-		Password:  "hashed_password", // The actual hash doesn't matter as we've mocked CheckPasswordHash
-		FirstName: "John",
-		LastName:  "Doe",
-		CreatedAt: time.Now(),
+		ID:          uuid.New(),
+		Email:       "test@example.com",
+		Password:    "hashed_password",
+		FirstName:   "John",
+		LastName:    "Doe",
+		PhoneNumber: "+1234567890",
+		CreatedAt:   time.Now(),
 	}
 
 	tests := []struct {
@@ -212,11 +228,12 @@ func TestLogin(t *testing.T) {
 			expectedBody: map[string]interface{}{
 				"token": "test-jwt-token",
 				"user": map[string]interface{}{
-					"id":         testUser.ID.String(),
-					"email":      testUser.Email,
-					"first_name": testUser.FirstName,
-					"last_name":  testUser.LastName,
-					"created_at": testUser.CreatedAt.Format(time.RFC3339Nano),
+					"id":           testUser.ID.String(),
+					"email":        testUser.Email,
+					"first_name":   testUser.FirstName,
+					"last_name":    testUser.LastName,
+					"phone_number": testUser.PhoneNumber,
+					"created_at":   testUser.CreatedAt.Format(time.RFC3339Nano),
 				},
 			},
 		},

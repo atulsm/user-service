@@ -91,12 +91,14 @@ CREATE TABLE users (
     password_hash VARCHAR(255) NOT NULL,
     first_name VARCHAR(100) NOT NULL,
     last_name VARCHAR(100) NOT NULL,
+    phone_number VARCHAR(20),
     created_at TIMESTAMP NOT NULL,
     updated_at TIMESTAMP NOT NULL
 );
 
--- Create index
+-- Create indexes
 CREATE INDEX idx_users_email ON users(email);
+CREATE INDEX idx_users_phone_number ON users(phone_number);
 ```
 
 ### Database Migrations

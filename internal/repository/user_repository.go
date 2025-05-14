@@ -60,19 +60,20 @@ func (r *PostgresUserRepository) CreateUser(req *models.RegisterRequest) (*model
 
 	// Create new user
 	user := &models.User{
-		ID:        uuid.New(),
-		Email:     req.Email,
-		Password:  passwordHash,
-		FirstName: req.FirstName,
-		LastName:  req.LastName,
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		ID:          uuid.New(),
+		Email:       req.Email,
+		Password:    passwordHash,
+		FirstName:   req.FirstName,
+		LastName:    req.LastName,
+		PhoneNumber: req.PhoneNumber,
+		CreatedAt:   time.Now(),
+		UpdatedAt:   time.Now(),
 	}
 
 	// Insert user into database
 	_, err = r.db.NamedExec(`
-		INSERT INTO users (id, email, password_hash, first_name, last_name, created_at, updated_at)
-		VALUES (:id, :email, :password_hash, :first_name, :last_name, :created_at, :updated_at)
+		INSERT INTO users (id, email, password_hash, first_name, last_name, phone_number, created_at, updated_at)
+		VALUES (:id, :email, :password_hash, :first_name, :last_name, :phone_number, :created_at, :updated_at)
 	`, user)
 
 	if err != nil {
@@ -120,6 +121,9 @@ func (r *PostgresUserRepository) UpdateUser(id uuid.UUID, updates *models.Update
 	if updates.LastName != "" {
 		user.LastName = updates.LastName
 	}
+	if updates.PhoneNumber != "" {
+		user.PhoneNumber = updates.PhoneNumber
+	}
 	if updates.Email != "" && updates.Email != user.Email {
 		// Check if email is already taken
 		var count int
@@ -141,6 +145,7 @@ func (r *PostgresUserRepository) UpdateUser(id uuid.UUID, updates *models.Update
 		SET first_name = :first_name, 
 			last_name = :last_name, 
 			email = :email, 
+			phone_number = :phone_number,
 			updated_at = :updated_at
 		WHERE id = :id
 	`, user)

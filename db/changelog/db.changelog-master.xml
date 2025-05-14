@@ -12,4 +12,5 @@
         http://www.liquibase.org/xml/ns/pro/liquibase-pro-4.20.xsd">
 
     <include file="db/changelog/changes/001-initial-schema.xml"/>
+    <include file="db/changelog/changes/002-add-phone-number.xml"/>
 </databaseChangeLog> 

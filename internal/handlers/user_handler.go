@@ -56,11 +56,12 @@ func (h *UserHandler) Register(c *gin.Context) {
 	c.JSON(http.StatusCreated, models.LoginResponse{
 		Token: token,
 		User: models.UserResponse{
-			ID:        user.ID,
-			Email:     user.Email,
-			FirstName: user.FirstName,
-			LastName:  user.LastName,
-			CreatedAt: user.CreatedAt,
+			ID:          user.ID,
+			Email:       user.Email,
+			FirstName:   user.FirstName,
+			LastName:    user.LastName,
+			PhoneNumber: user.PhoneNumber,
+			CreatedAt:   user.CreatedAt,
 		},
 	})
 }
@@ -93,11 +94,12 @@ func (h *UserHandler) Login(c *gin.Context) {
 	c.JSON(http.StatusOK, models.LoginResponse{
 		Token: token,
 		User: models.UserResponse{
-			ID:        user.ID,
-			Email:     user.Email,
-			FirstName: user.FirstName,
-			LastName:  user.LastName,
-			CreatedAt: user.CreatedAt,
+			ID:          user.ID,
+			Email:       user.Email,
+			FirstName:   user.FirstName,
+			LastName:    user.LastName,
+			PhoneNumber: user.PhoneNumber,
+			CreatedAt:   user.CreatedAt,
 		},
 	})
 }
@@ -125,11 +127,12 @@ func (h *UserHandler) GetProfile(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, models.UserResponse{
-		ID:        user.ID,
-		Email:     user.Email,
-		FirstName: user.FirstName,
-		LastName:  user.LastName,
-		CreatedAt: user.CreatedAt,
+		ID:          user.ID,
+		Email:       user.Email,
+		FirstName:   user.FirstName,
+		LastName:    user.LastName,
+		PhoneNumber: user.PhoneNumber,
+		CreatedAt:   user.CreatedAt,
 	})
 }
 
@@ -188,11 +191,12 @@ func (h *UserHandler) GetUser(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, models.UserResponse{
-		ID:        user.ID,
-		Email:     user.Email,
-		FirstName: user.FirstName,
-		LastName:  user.LastName,
-		CreatedAt: user.CreatedAt,
+		ID:          user.ID,
+		Email:       user.Email,
+		FirstName:   user.FirstName,
+		LastName:    user.LastName,
+		PhoneNumber: user.PhoneNumber,
+		CreatedAt:   user.CreatedAt,
 	})
 }
 
@@ -222,11 +226,12 @@ func (h *UserHandler) ListUsers(c *gin.Context) {
 	response := make([]models.UserResponse, len(users))
 	for i, user := range users {
 		response[i] = models.UserResponse{
-			ID:        user.ID,
-			Email:     user.Email,
-			FirstName: user.FirstName,
-			LastName:  user.LastName,
-			CreatedAt: user.CreatedAt,
+			ID:          user.ID,
+			Email:       user.Email,
+			FirstName:   user.FirstName,
+			LastName:    user.LastName,
+			PhoneNumber: user.PhoneNumber,
+			CreatedAt:   user.CreatedAt,
 		}
 	}
 

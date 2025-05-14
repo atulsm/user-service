@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="002" author="user-service">
+        <comment>Add phone number to users table</comment>
+        
+        <!-- Add phone_number column -->
+        <addColumn tableName="users">
+            <column name="phone_number" type="varchar(20)">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+
+        <!-- Create index on phone_number for faster lookups -->
+        <createIndex indexName="idx_users_phone_number" tableName="users">
+            <column name="phone_number"/>
+        </createIndex>
+
+        <!-- Add a comment to the column -->
+        <sql>COMMENT ON COLUMN users.phone_number IS 'User phone number in E.164 format';</sql>
+    </changeSet>
+
+</databaseChangeLog> 
