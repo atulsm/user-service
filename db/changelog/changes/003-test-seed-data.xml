@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="003" author="user-service" context="test">
+        <comment>Add test seed data</comment>
+
+        <!-- Admin user -->
+        <insert tableName="users">
+            <column name="id" value="a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"/>
+            <column name="email" value="admin@example.com"/>
+            <!-- Password: Admin123! -->
+            <column name="password_hash" value="$2a$14$ajq8Q7fbtFRQvXpdCq7Jcuy.Rx1h/L4J60Otx.gyNLbAYctGMJ9tK"/>
+            <column name="first_name" value="Admin"/>
+            <column name="last_name" value="User"/>
+            <column name="phone_number" value="+1234567890"/>
+            <column name="created_at" valueDate="2024-01-01 00:00:00"/>
+            <column name="updated_at" valueDate="2024-01-01 00:00:00"/>
+        </insert>
+
+        <!-- Regular user -->
+        <insert tableName="users">
+            <column name="id" value="b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a12"/>
+            <column name="email" value="user@example.com"/>
+            <!-- Password: User123! -->
+            <column name="password_hash" value="$2a$14$5zf7dNLjHT4XmP8/L.J2celzZdJ6HCjYPwVxPd0vxAQ71KXQ/3TzG"/>
+            <column name="first_name" value="Regular"/>
+            <column name="last_name" value="User"/>
+            <column name="phone_number" value="+1987654321"/>
+            <column name="created_at" valueDate="2024-01-02 00:00:00"/>
+            <column name="updated_at" valueDate="2024-01-02 00:00:00"/>
+        </insert>
+
+        <!-- Test user with no phone -->
+        <insert tableName="users">
+            <column name="id" value="c0eebc99-9c0b-4ef8-bb6d-6bb9bd380a13"/>
+            <column name="email" value="nophone@example.com"/>
+            <!-- Password: Test123! -->
+            <column name="password_hash" value="$2a$14$QeVs4r6MrOuYBEF12VNWkOdZGBw.Xs8Df1Td5hVx2R2rHHUpBdyRO"/>
+            <column name="first_name" value="No"/>
+            <column name="last_name" value="Phone"/>
+            <column name="created_at" valueDate="2024-01-03 00:00:00"/>
+            <column name="updated_at" valueDate="2024-01-03 00:00:00"/>
+        </insert>
+
+        <!-- Inactive user -->
+        <insert tableName="users">
+            <column name="id" value="d0eebc99-9c0b-4ef8-bb6d-6bb9bd380a14"/>
+            <column name="email" value="inactive@example.com"/>
+            <!-- Password: Inactive123! -->
+            <column name="password_hash" value="$2a$14$wfkhdJKHf8YJxJ0P7RFOh.ZC6zv0jmxoGy1Rl7YyQ8xtVXPfW0FvC"/>
+            <column name="first_name" value="Inactive"/>
+            <column name="last_name" value="User"/>
+            <column name="phone_number" value="+1555555555"/>
+            <column name="created_at" valueDate="2024-01-04 00:00:00"/>
+            <column name="updated_at" valueDate="2024-01-04 00:00:00"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog> 

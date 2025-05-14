@@ -148,7 +148,43 @@ go build -o userservice ./cmd/server
 
 ## 🧪 Running Tests
 
-The project includes a comprehensive test suite with a convenient test runner script:
+### Setting Up Test Database
+
+The project includes a script to set up a test database with sample data:
+
+```bash
+# Set up test database with default settings
+./scripts/setup_test_db.sh
+
+# Custom database settings
+./scripts/setup_test_db.sh -n custom_db_name -u db_user -p db_password -h db_host -P db_port
+```
+
+### Test Users
+
+The following test users are available in the test database:
+
+1. Admin User
+   - Email: admin@example.com
+   - Password: Admin123!
+   - Phone: +1234567890
+
+2. Regular User
+   - Email: user@example.com
+   - Password: User123!
+   - Phone: +1987654321
+
+3. No Phone User
+   - Email: nophone@example.com
+   - Password: Test123!
+   - Phone: (not set)
+
+4. Inactive User
+   - Email: inactive@example.com
+   - Password: Inactive123!
+   - Phone: +1555555555
+
+### Running Test Suite
 
 ```bash
 # Run all tests
