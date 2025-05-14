@@ -30,15 +30,20 @@ PGPASSWORD=$DB_PASSWORD dropdb -U $DB_USER -h $DB_HOST -p $DB_PORT $DB_NAME --if
 # Create fresh database
 PGPASSWORD=$DB_PASSWORD createdb -U $DB_USER -h $DB_HOST -p $DB_PORT $DB_NAME
 
-# Set DATABASE_URL for Liquibase
-export DATABASE_URL="postgres://$DB_USER:$DB_PASSWORD@$DB_HOST:$DB_PORT/$DB_NAME?sslmode=disable"
+# Create env.sh file with DATABASE_URL
+DATABASE_URL="postgres://$DB_USER:$DB_PASSWORD@$DB_HOST:$DB_PORT/$DB_NAME?sslmode=disable"
+echo "export DATABASE_URL=\"$DATABASE_URL\"" > env.sh
+chmod +x env.sh
 
 # Run Liquibase migrations with test context
 echo "Running migrations with test data..."
+export DATABASE_URL
 liquibase --contexts=test update
 
 echo "Test database setup complete!"
 echo "Test database connection string: $DATABASE_URL"
+echo -e "\nTo set DATABASE_URL in your current shell, run:"
+echo "source env.sh"
 
 # Print test user credentials
 echo -e "\nTest Users Available:"
