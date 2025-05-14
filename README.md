@@ -17,6 +17,7 @@ A high-performance Go API server providing comprehensive user management functio
 - 🔒 Secure password hashing with bcrypt
 - 🔄 Graceful server shutdown
 - 📦 Well-organized project structure
+- 🔄 Database migrations with Liquibase
 
 ## 🏗️ Project Structure
 
@@ -24,6 +25,10 @@ A high-performance Go API server providing comprehensive user management functio
 user-service/
 ├── cmd/
 │   └── server/          # Application entry point
+├── db/
+│   └── changelog/       # Database migration files
+│       ├── changes/     # Individual change files
+│       └── db.changelog-master.xml
 ├── internal/
 │   ├── config/          # Configuration management
 │   ├── handlers/        # HTTP request handlers
@@ -34,6 +39,7 @@ user-service/
 │   └── utils/          # Shared utilities
 ├── scripts/
 │   └── test.sh         # Test runner script
+├── liquibase.properties # Liquibase configuration
 └── README.md
 ```
 
@@ -43,6 +49,7 @@ user-service/
 - Go 1.16 or higher
 - PostgreSQL database
 - Git
+- Liquibase (for database migrations)
 
 ### Environment Variables
 ```bash
@@ -55,6 +62,20 @@ export PORT="8080"  # defaults to 8080
 ```
 
 ### Database Setup
+
+#### Using Liquibase (Recommended)
+```bash
+# Install Liquibase
+brew install liquibase
+
+# Create database
+createdb userservice
+
+# Run migrations
+liquibase update
+```
+
+#### Manual Setup (Alternative)
 ```sql
 -- Connect to PostgreSQL
 psql -U postgres
@@ -76,6 +97,27 @@ CREATE TABLE users (
 
 -- Create index
 CREATE INDEX idx_users_email ON users(email);
+```
+
+### Database Migrations
+
+The project uses Liquibase for database version control. Migration files are located in the `db/changelog` directory.
+
+```bash
+# View pending changes
+liquibase status
+
+# Apply pending changes
+liquibase update
+
+# Rollback last change
+liquibase rollbackCount 1
+
+# Generate change log from existing database
+liquibase generateChangeLog
+
+# Validate change log
+liquibase validate
 ```
 
 ### Building and Running
