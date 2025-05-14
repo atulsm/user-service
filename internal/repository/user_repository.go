@@ -3,6 +3,8 @@ package repository
 import (
 	"database/sql"
 	"errors"
+	"log"
+	"net/url"
 	"time"
 
 	"atulsm/userservice/internal/models"
@@ -28,6 +30,15 @@ type PostgresUserRepository struct {
 }
 
 func NewUserRepository(dbURL string) UserRepository {
+	// Parse the database URL to extract database name
+	parsedURL, err := url.Parse(dbURL)
+	if err != nil {
+		log.Printf("Warning: Could not parse database URL: %v", err)
+	} else {
+		dbName := parsedURL.Path[1:] // Remove leading '/'
+		log.Printf("Connecting to database: %s on host: %s", dbName, parsedURL.Host)
+	}
+
 	db, err := sqlx.Connect("postgres", dbURL)
 	if err != nil {
 		panic(err)
@@ -38,6 +49,7 @@ func NewUserRepository(dbURL string) UserRepository {
 	db.SetMaxIdleConns(5)
 	db.SetConnMaxLifetime(5 * time.Minute)
 
+	log.Printf("Successfully connected to PostgreSQL database")
 	return &PostgresUserRepository{db: db}
 }
 
