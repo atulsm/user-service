@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { CssBaseline, ThemeProvider, createTheme } from '@mui/material';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import UserList from './pages/UserList';
 import UserForm from './pages/UserForm';
+import Layout from './components/Layout';
 
 const theme = createTheme({
   palette: {
@@ -27,7 +28,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   if (!token) {
     return <Navigate to="/login" />;
   }
-  return <>{children}</>;
+  return <Layout>{children}</Layout>;
 };
 
 const App: React.FC = () => {

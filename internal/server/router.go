@@ -51,6 +51,7 @@ func SetupRouter() (*gin.Engine, error) {
 		authorized.GET("/users/:id", userHandler.GetUser)
 		authorized.PUT("/users/:id", userHandler.UpdateUser)
 		authorized.DELETE("/users/:id", userHandler.DeleteUser)
+		authorized.POST("/auth/logout", userHandler.Logout)
 	}
 
 	// Health check

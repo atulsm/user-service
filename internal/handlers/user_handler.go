@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"atulsm/userservice/internal/models"
 	"atulsm/userservice/internal/repository"
@@ -334,4 +335,28 @@ func (h *UserHandler) UpdateUser(c *gin.Context) {
 		PhoneNumber: user.PhoneNumber.String,
 		CreatedAt:   user.CreatedAt,
 	})
+}
+
+func (h *UserHandler) Logout(c *gin.Context) {
+	// Get the token from the Authorization header
+	authHeader := c.GetHeader("Authorization")
+	if authHeader == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "authorization header is required"})
+		return
+	}
+
+	// Extract the token
+	parts := strings.Split(authHeader, " ")
+	if len(parts) != 2 || parts[0] != "Bearer" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid authorization header format"})
+		return
+	}
+
+	// In a real implementation, you might want to:
+	// 1. Add the token to a blacklist in Redis
+	// 2. Clear any server-side sessions
+	// 3. Update the user's last logout timestamp
+	// For now, we'll just return success as the client will remove the token
+
+	c.JSON(http.StatusOK, gin.H{"message": "successfully logged out"})
 }

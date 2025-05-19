@@ -470,3 +470,66 @@ func TestDeleteUser(t *testing.T) {
 		})
 	}
 }
+
+func TestLogout(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	mockRepo := new(MockUserRepository)
+	mockTokenGen := new(MockTokenGenerator)
+	mockPwHasher := new(MockPasswordHasher)
+	handler := NewUserHandler(mockRepo, mockTokenGen, mockPwHasher)
+
+	tests := []struct {
+		name           string
+		authHeader     string
+		expectedStatus int
+		expectedBody   map[string]interface{}
+	}{
+		{
+			name:           "successful logout",
+			authHeader:     "Bearer test-jwt-token",
+			expectedStatus: http.StatusOK,
+			expectedBody: map[string]interface{}{
+				"message": "successfully logged out",
+			},
+		},
+		{
+			name:           "missing authorization header",
+			authHeader:     "",
+			expectedStatus: http.StatusBadRequest,
+			expectedBody: map[string]interface{}{
+				"error": "authorization header is required",
+			},
+		},
+		{
+			name:           "invalid authorization format",
+			authHeader:     "InvalidFormat test-jwt-token",
+			expectedStatus: http.StatusBadRequest,
+			expectedBody: map[string]interface{}{
+				"error": "invalid authorization header format",
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			router := gin.New()
+			router.POST("/logout", handler.Logout)
+
+			req := httptest.NewRequest("POST", "/logout", nil)
+			if tt.authHeader != "" {
+				req.Header.Set("Authorization", tt.authHeader)
+			}
+			resp := httptest.NewRecorder()
+
+			router.ServeHTTP(resp, req)
+
+			assert.Equal(t, tt.expectedStatus, resp.Code)
+			if tt.expectedBody != nil {
+				var response map[string]interface{}
+				json.Unmarshal(resp.Body.Bytes(), &response)
+				assert.Equal(t, tt.expectedBody, response)
+			}
+		})
+	}
+}
