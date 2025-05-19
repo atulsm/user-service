@@ -7,7 +7,7 @@ import UserList from './pages/UserList';
 import UserForm from './pages/UserForm';
 import UserProfile from './pages/UserProfile';
 import Dashboard from './pages/Dashboard';
-import Navbar from './components/Navbar';
+import Layout from './components/Layout';
 import PrivateRoute from './components/PrivateRoute';
 
 const theme = createTheme({
@@ -88,7 +88,6 @@ const App: React.FC = () => {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Router>
-        <Navbar />
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
@@ -96,7 +95,9 @@ const App: React.FC = () => {
             path="/dashboard"
             element={
               <PrivateRoute>
-                <Dashboard />
+                <Layout>
+                  <Dashboard />
+                </Layout>
               </PrivateRoute>
             }
           />
@@ -104,7 +105,9 @@ const App: React.FC = () => {
             path="/users"
             element={
               <PrivateRoute>
-                <UserList />
+                <Layout>
+                  <UserList />
+                </Layout>
               </PrivateRoute>
             }
           />
@@ -112,7 +115,9 @@ const App: React.FC = () => {
             path="/users/new"
             element={
               <PrivateRoute>
-                <UserForm />
+                <Layout>
+                  <UserForm />
+                </Layout>
               </PrivateRoute>
             }
           />
@@ -120,7 +125,9 @@ const App: React.FC = () => {
             path="/users/:id"
             element={
               <PrivateRoute>
-                <UserForm />
+                <Layout>
+                  <UserForm />
+                </Layout>
               </PrivateRoute>
             }
           />
@@ -128,7 +135,9 @@ const App: React.FC = () => {
             path="/users/profile"
             element={
               <PrivateRoute>
-                <UserProfile />
+                <Layout>
+                  <UserProfile />
+                </Layout>
               </PrivateRoute>
             }
           />
