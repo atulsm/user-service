@@ -8,19 +8,17 @@ import {
   Typography,
   Box,
   Alert,
-  Grid,
 } from '@mui/material';
-import { userService, User } from '../services/api';
+import { userService, User, UpdateUserRequest, CreateUserRequest } from '../services/api';
 
 const UserForm: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const [error, setError] = useState('');
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<CreateUserRequest | UpdateUserRequest>({
     firstName: '',
     lastName: '',
     email: '',
-    password: '',
     phoneNumber: '',
   });
 
@@ -37,7 +35,6 @@ const UserForm: React.FC = () => {
         firstName: user.firstName,
         lastName: user.lastName,
         email: user.email,
-        password: '',
         phoneNumber: user.phoneNumber || '',
       });
     } catch (err) {
@@ -57,9 +54,16 @@ const UserForm: React.FC = () => {
     e.preventDefault();
     try {
       if (id === 'new') {
-        await userService.createUser(formData);
+        // For new user, ensure required fields are present
+        const createData: CreateUserRequest = {
+          firstName: formData.firstName || '',
+          lastName: formData.lastName || '',
+          email: formData.email || '',
+          phoneNumber: formData.phoneNumber,
+        };
+        await userService.createUser(createData);
       } else {
-        await userService.updateUser(id!, formData);
+        await userService.updateUser(id!, formData as UpdateUserRequest);
       }
       navigate('/users');
     } catch (err) {
@@ -68,63 +72,38 @@ const UserForm: React.FC = () => {
   };
 
   return (
-    <Container component="main" maxWidth="xs">
-      <Box
-        sx={{
-          marginTop: 8,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-        }}
-      >
-        <Paper
-          elevation={3}
-          sx={{
-            padding: 4,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            width: '100%',
-          }}
-        >
-          <Typography component="h1" variant="h5">
+    <Container maxWidth="md">
+      <Box sx={{ mt: 4 }}>
+        <Paper sx={{ p: 3 }}>
+          <Typography component="h1" variant="h4" gutterBottom>
             {id === 'new' ? 'Create User' : 'Edit User'}
           </Typography>
           {error && (
-            <Alert severity="error" sx={{ mt: 2, width: '100%' }}>
+            <Alert severity="error" sx={{ mb: 2 }}>
               {error}
             </Alert>
           )}
-          <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  margin="normal"
-                  required
-                  fullWidth
-                  id="firstName"
-                  label="First Name"
-                  name="firstName"
-                  autoComplete="given-name"
-                  autoFocus
-                  value={formData.firstName}
-                  onChange={handleChange}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  margin="normal"
-                  required
-                  fullWidth
-                  id="lastName"
-                  label="Last Name"
-                  name="lastName"
-                  autoComplete="family-name"
-                  value={formData.lastName}
-                  onChange={handleChange}
-                />
-              </Grid>
-            </Grid>
+          <Box component="form" onSubmit={handleSubmit}>
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              id="firstName"
+              label="First Name"
+              name="firstName"
+              value={formData.firstName}
+              onChange={handleChange}
+            />
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              id="lastName"
+              label="Last Name"
+              name="lastName"
+              value={formData.lastName}
+              onChange={handleChange}
+            />
             <TextField
               margin="normal"
               required
@@ -146,19 +125,6 @@ const UserForm: React.FC = () => {
               value={formData.phoneNumber}
               onChange={handleChange}
               placeholder="+1234567890"
-            />
-            <TextField
-              margin="normal"
-              required={id === 'new'}
-              fullWidth
-              name="password"
-              label="Password"
-              type="password"
-              id="password"
-              autoComplete="new-password"
-              value={formData.password}
-              onChange={handleChange}
-              helperText={id !== 'new' ? 'Leave blank to keep current password' : ''}
             />
             <Button
               type="submit"

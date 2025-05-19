@@ -56,14 +56,15 @@ export interface CreateUserRequest {
   firstName: string;
   lastName: string;
   email: string;
-  password: string;
+  password?: string;
+  phoneNumber?: string;
 }
 
 export interface UpdateUserRequest {
   firstName?: string;
   lastName?: string;
   email?: string;
-  password?: string;
+  phoneNumber?: string;
 }
 
 export const authService = {
