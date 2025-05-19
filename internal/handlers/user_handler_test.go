@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"bytes"
+	"database/sql"
 	"encoding/json"
 	"errors"
 	"net/http"
@@ -37,6 +38,11 @@ type MockPasswordHasher struct {
 
 func (m *MockPasswordHasher) CheckPasswordHash(password, hash string) bool {
 	return password == "password123" // Only return true for our test password
+}
+
+func (m *MockPasswordHasher) HashPassword(password string) (string, error) {
+	args := m.Called(password)
+	return args.String(0), args.Error(1)
 }
 
 // MockUserRepository is a mock implementation of UserRepository
@@ -94,6 +100,11 @@ func (m *MockUserRepository) DeleteUser(id uuid.UUID) error {
 	return args.Error(0)
 }
 
+func (m *MockUserRepository) UpdatePassword(id uuid.UUID, newPassword string) error {
+	args := m.Called(id, newPassword)
+	return args.Error(0)
+}
+
 func TestRegister(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
@@ -107,7 +118,7 @@ func TestRegister(t *testing.T) {
 		Email:       "test@example.com",
 		FirstName:   "John",
 		LastName:    "Doe",
-		PhoneNumber: "+1234567890",
+		PhoneNumber: sql.NullString{String: "+1234567890", Valid: true},
 		CreatedAt:   time.Now(),
 	}
 
@@ -204,7 +215,7 @@ func TestLogin(t *testing.T) {
 		Password:    "hashed_password",
 		FirstName:   "John",
 		LastName:    "Doe",
-		PhoneNumber: "+1234567890",
+		PhoneNumber: sql.NullString{String: "+1234567890", Valid: true},
 		CreatedAt:   time.Now(),
 	}
 
