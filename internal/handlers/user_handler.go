@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"log"
 	"net/http"
 	"strconv"
 
@@ -17,6 +18,7 @@ type TokenGenerator interface {
 
 type PasswordHasher interface {
 	CheckPasswordHash(password, hash string) bool
+	HashPassword(password string) (string, error)
 }
 
 type UserHandler struct {
@@ -60,7 +62,7 @@ func (h *UserHandler) Register(c *gin.Context) {
 			Email:       user.Email,
 			FirstName:   user.FirstName,
 			LastName:    user.LastName,
-			PhoneNumber: user.PhoneNumber,
+			PhoneNumber: user.PhoneNumber.String,
 			CreatedAt:   user.CreatedAt,
 		},
 	})
@@ -73,13 +75,20 @@ func (h *UserHandler) Login(c *gin.Context) {
 		return
 	}
 
+	// Debug log: Log the email being checked
+	log.Printf("Attempting login for email: %s", req.Email)
+
 	user, err := h.repo.GetUserByEmail(req.Email)
 	if err != nil {
+		// Debug log: Log if user not found
+		log.Printf("User not found for email: %s, error: %v", req.Email, err)
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid credentials"})
 		return
 	}
 
+	// Debug log: Log if password check fails
 	if !h.pwHasher.CheckPasswordHash(req.Password, user.Password) {
+		log.Printf("Invalid password for user: %s", req.Email)
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid credentials"})
 		return
 	}
@@ -98,7 +107,7 @@ func (h *UserHandler) Login(c *gin.Context) {
 			Email:       user.Email,
 			FirstName:   user.FirstName,
 			LastName:    user.LastName,
-			PhoneNumber: user.PhoneNumber,
+			PhoneNumber: user.PhoneNumber.String,
 			CreatedAt:   user.CreatedAt,
 		},
 	})
@@ -131,7 +140,7 @@ func (h *UserHandler) GetProfile(c *gin.Context) {
 		Email:       user.Email,
 		FirstName:   user.FirstName,
 		LastName:    user.LastName,
-		PhoneNumber: user.PhoneNumber,
+		PhoneNumber: user.PhoneNumber.String,
 		CreatedAt:   user.CreatedAt,
 	})
 }
@@ -195,7 +204,7 @@ func (h *UserHandler) GetUser(c *gin.Context) {
 		Email:       user.Email,
 		FirstName:   user.FirstName,
 		LastName:    user.LastName,
-		PhoneNumber: user.PhoneNumber,
+		PhoneNumber: user.PhoneNumber.String,
 		CreatedAt:   user.CreatedAt,
 	})
 }
@@ -207,20 +216,27 @@ func (h *UserHandler) ListUsers(c *gin.Context) {
 
 	limit, err := strconv.Atoi(limitStr)
 	if err != nil {
+		log.Printf("Invalid limit parameter: %s", limitStr)
 		limit = 10
 	}
 
 	offset, err := strconv.Atoi(offsetStr)
 	if err != nil {
+		log.Printf("Invalid offset parameter: %s", offsetStr)
 		offset = 0
 	}
+
+	log.Printf("Fetching users with limit: %d, offset: %d", limit, offset)
 
 	// Get users
 	users, err := h.repo.ListUsers(limit, offset)
 	if err != nil {
+		log.Printf("Error fetching users: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+
+	log.Printf("Successfully fetched %d users", len(users))
 
 	// Convert to response objects
 	response := make([]models.UserResponse, len(users))
@@ -230,7 +246,7 @@ func (h *UserHandler) ListUsers(c *gin.Context) {
 			Email:       user.Email,
 			FirstName:   user.FirstName,
 			LastName:    user.LastName,
-			PhoneNumber: user.PhoneNumber,
+			PhoneNumber: user.PhoneNumber.String,
 			CreatedAt:   user.CreatedAt,
 		}
 	}
@@ -255,4 +271,34 @@ func (h *UserHandler) DeleteUser(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "user deleted successfully"})
+}
+
+func (h *UserHandler) ResetPassword(c *gin.Context) {
+	var req models.ResetPasswordRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Get user by email
+	user, err := h.repo.GetUserByEmail(req.Email)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
+		return
+	}
+
+	// Hash the new password
+	passwordHash, err := h.pwHasher.HashPassword(req.NewPassword)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to hash password"})
+		return
+	}
+
+	// Update the user's password
+	if err := h.repo.UpdatePassword(user.ID, passwordHash); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to update password"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "password reset successfully"})
 }

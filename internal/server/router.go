@@ -27,6 +27,7 @@ func SetupRouter() (*gin.Engine, error) {
 	// Apply global middleware
 	router.Use(gin.Recovery())
 	router.Use(gin.Logger())
+	router.Use(middleware.CORSMiddleware())
 
 	// Initialize handlers with all required dependencies
 	userHandler := handlers.NewUserHandler(
@@ -36,11 +37,12 @@ func SetupRouter() (*gin.Engine, error) {
 	)
 
 	// Public routes
-	router.POST("/api/users/register", userHandler.Register)
-	router.POST("/api/users/login", userHandler.Login)
+	router.POST("/api/v1/auth/register", userHandler.Register)
+	router.POST("/api/v1/auth/login", userHandler.Login)
+	router.POST("/api/v1/auth/reset-password", userHandler.ResetPassword)
 
 	// Protected routes
-	authorized := router.Group("/api")
+	authorized := router.Group("/api/v1")
 	authorized.Use(middleware.AuthMiddleware())
 	{
 		authorized.GET("/users/profile", userHandler.GetProfile)

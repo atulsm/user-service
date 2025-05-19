@@ -23,6 +23,7 @@ type UserRepository interface {
 	ListUsers(limit, offset int) ([]*models.User, error)
 	DeleteUser(id uuid.UUID) error
 	Close() error
+	UpdatePassword(id uuid.UUID, passwordHash string) error
 }
 
 type PostgresUserRepository struct {
@@ -77,7 +78,7 @@ func (r *PostgresUserRepository) CreateUser(req *models.RegisterRequest) (*model
 		Password:    passwordHash,
 		FirstName:   req.FirstName,
 		LastName:    req.LastName,
-		PhoneNumber: req.PhoneNumber,
+		PhoneNumber: sql.NullString{String: req.PhoneNumber, Valid: req.PhoneNumber != ""},
 		CreatedAt:   time.Now(),
 		UpdatedAt:   time.Now(),
 	}
@@ -134,7 +135,7 @@ func (r *PostgresUserRepository) UpdateUser(id uuid.UUID, updates *models.Update
 		user.LastName = updates.LastName
 	}
 	if updates.PhoneNumber != "" {
-		user.PhoneNumber = updates.PhoneNumber
+		user.PhoneNumber = sql.NullString{String: updates.PhoneNumber, Valid: true}
 	}
 	if updates.Email != "" && updates.Email != user.Email {
 		// Check if email is already taken
@@ -180,12 +181,16 @@ func (r *PostgresUserRepository) ListUsers(limit, offset int) ([]*models.User, e
 		offset = 0
 	}
 
+	log.Printf("Executing ListUsers query with limit: %d, offset: %d", limit, offset)
+
 	users := []*models.User{}
 	err := r.db.Select(&users, "SELECT * FROM users ORDER BY created_at DESC LIMIT $1 OFFSET $2", limit, offset)
 	if err != nil {
+		log.Printf("Database error in ListUsers: %v", err)
 		return nil, err
 	}
 
+	log.Printf("Successfully retrieved %d users from database", len(users))
 	return users, nil
 }
 
@@ -209,4 +214,14 @@ func (r *PostgresUserRepository) DeleteUser(id uuid.UUID) error {
 
 func (r *PostgresUserRepository) Close() error {
 	return r.db.Close()
+}
+
+func (r *PostgresUserRepository) UpdatePassword(id uuid.UUID, passwordHash string) error {
+	_, err := r.db.Exec(`
+		UPDATE users 
+		SET password_hash = $1,
+			updated_at = NOW()
+		WHERE id = $2
+	`, passwordHash, id)
+	return err
 }
