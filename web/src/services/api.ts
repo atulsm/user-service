@@ -92,28 +92,13 @@ export const authService = {
 };
 
 export const userService = {
-  getUsers: async (): Promise<User[]> => {
-    const response = await api.get('/users');
-    return response.data;
-  },
-
-  getUser: async (id: string): Promise<User> => {
-    const response = await api.get(`/users/${id}`);
-    return response.data;
-  },
-
-  createUser: async (data: CreateUserRequest): Promise<User> => {
-    console.log('Creating user with data:', data);
-    const response = await api.post('/users', data);
-    return response.data;
-  },
-
-  updateUser: async (id: string, data: UpdateUserRequest): Promise<User> => {
-    const response = await api.put(`/users/${id}`, data);
-    return response.data;
-  },
-
-  deleteUser: async (id: string): Promise<void> => {
-    await api.delete(`/users/${id}`);
-  },
+  getUsers: () => api.get<User[]>('/users').then((res) => res.data),
+  getUser: (id: string) => api.get<User>(`/users/${id}`).then((res) => res.data),
+  createUser: (data: CreateUserRequest) => api.post<User>('/users', data).then((res) => res.data),
+  updateUser: (id: string, data: UpdateUserRequest) =>
+    api.put<User>(`/users/${id}`, data).then((res) => res.data),
+  deleteUser: (id: string) => api.delete(`/users/${id}`).then((res) => res.data),
+  getProfile: () => api.get<User>('/users/profile').then((res) => res.data),
+  updateProfile: (data: UpdateUserRequest) =>
+    api.put<User>('/users/profile', data).then((res) => res.data),
 }; 

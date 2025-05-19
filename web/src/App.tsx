@@ -5,7 +5,10 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import UserList from './pages/UserList';
 import UserForm from './pages/UserForm';
-import Layout from './components/Layout';
+import UserProfile from './pages/UserProfile';
+import Dashboard from './pages/Dashboard';
+import Navbar from './components/Navbar';
+import PrivateRoute from './components/PrivateRoute';
 
 const theme = createTheme({
   palette: {
@@ -80,43 +83,56 @@ const theme = createTheme({
   },
 });
 
-interface ProtectedRouteProps {
-  children: React.ReactNode;
-}
-
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-  const token = localStorage.getItem('token');
-  if (!token) {
-    return <Navigate to="/login" />;
-  }
-  return <Layout>{children}</Layout>;
-};
-
 const App: React.FC = () => {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Router>
+        <Navbar />
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route
+            path="/dashboard"
+            element={
+              <PrivateRoute>
+                <Dashboard />
+              </PrivateRoute>
+            }
+          />
+          <Route
             path="/users"
             element={
-              <ProtectedRoute>
+              <PrivateRoute>
                 <UserList />
-              </ProtectedRoute>
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/users/new"
+            element={
+              <PrivateRoute>
+                <UserForm />
+              </PrivateRoute>
             }
           />
           <Route
             path="/users/:id"
             element={
-              <ProtectedRoute>
+              <PrivateRoute>
                 <UserForm />
-              </ProtectedRoute>
+              </PrivateRoute>
             }
           />
-          <Route path="/" element={<Navigate to="/users" />} />
+          <Route
+            path="/users/profile"
+            element={
+              <PrivateRoute>
+                <UserProfile />
+              </PrivateRoute>
+            }
+          />
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
         </Routes>
       </Router>
     </ThemeProvider>
