@@ -48,6 +48,7 @@ func SetupRouter() (*gin.Engine, error) {
 		authorized.GET("/users/profile", userHandler.GetProfile)
 		authorized.PUT("/users/profile", userHandler.UpdateProfile)
 		authorized.GET("/users", userHandler.ListUsers)
+		authorized.POST("/users", userHandler.CreateUser)
 		authorized.GET("/users/:id", userHandler.GetUser)
 		authorized.PUT("/users/:id", userHandler.UpdateUser)
 		authorized.DELETE("/users/:id", userHandler.DeleteUser)

@@ -20,6 +20,7 @@ const UserForm: React.FC = () => {
     lastName: '',
     email: '',
     phoneNumber: '',
+    password: '',
   });
 
   useEffect(() => {
@@ -60,6 +61,7 @@ const UserForm: React.FC = () => {
           lastName: formData.lastName || '',
           email: formData.email || '',
           phoneNumber: formData.phoneNumber,
+          password: (formData as CreateUserRequest).password || '',
         };
         await userService.createUser(createData);
       } else {
@@ -115,6 +117,21 @@ const UserForm: React.FC = () => {
               value={formData.email}
               onChange={handleChange}
             />
+            {id === 'new' && (
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                id="password"
+                label="Password"
+                name="password"
+                type="password"
+                autoComplete="new-password"
+                value={(formData as CreateUserRequest).password}
+                onChange={handleChange}
+                helperText="Password must be at least 8 characters long"
+              />
+            )}
             <TextField
               margin="normal"
               fullWidth

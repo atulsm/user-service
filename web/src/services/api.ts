@@ -56,7 +56,7 @@ export interface CreateUserRequest {
   firstName: string;
   lastName: string;
   email: string;
-  password?: string;
+  password: string;
   phoneNumber?: string;
 }
 
@@ -103,6 +103,7 @@ export const userService = {
   },
 
   createUser: async (data: CreateUserRequest): Promise<User> => {
+    console.log('Creating user with data:', data);
     const response = await api.post('/users', data);
     return response.data;
   },
