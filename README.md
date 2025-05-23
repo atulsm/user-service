@@ -222,6 +222,8 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Performance
 
+### HTTP API Load Test Results
+
 Load test results using `wrk`:
 
 ```bash
@@ -243,6 +245,58 @@ Key metrics:
 - Average latency: 0.99ms
 - Requests per second: 22,981
 - Throughput: 31.17MB/s
+
+### gRPC API Load Test Results
+
+Load test results using `ghz`:
+
+```bash
+ghz --proto=proto/user.proto --call=user.UserService/GetUsers --insecure --duration=15s -c 5 localhost:50051
+```
+
+```
+Summary:
+  Count:        187335
+  Total:        15.00 s
+  Slowest:      15.72 ms
+  Fastest:      0.17 ms
+  Average:      0.35 ms
+  Requests/sec: 12490.50
+
+Response time histogram:
+  0.169  [1]      |
+  1.724  [187267] |∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎
+  3.279  [48]     |
+  4.834  [5]      |
+  6.389  [0]      |
+  7.944  [0]      |
+  9.498  [0]      |
+  11.053 [5]      |
+  12.608 [0]      |
+  14.163 [0]      |
+  15.718 [5]      |
+
+Latency distribution:
+  10 % in 0.26 ms 
+  25 % in 0.29 ms 
+  50 % in 0.33 ms 
+  75 % in 0.38 ms 
+  90 % in 0.45 ms 
+  95 % in 0.50 ms 
+  99 % in 0.72 ms 
+
+Status code distribution:
+  [OK]            187331 responses   
+  [Unavailable]   4 responses
+```
+
+Key metrics:
+- Average latency: 0.35ms
+- Requests per second: 12,490
+- 99th percentile latency: 0.72ms
+- Success rate: 99.998% (187,331/187,335)
+
+The gRPC endpoint shows significantly lower latency compared to the HTTP endpoint, making it ideal for high-performance microservices communication.
 
 ## Testing gRPC Service
 
