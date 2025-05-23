@@ -25,6 +25,7 @@ import {
 import { Line, Bar } from 'react-chartjs-2';
 import { format, subDays, startOfDay, endOfDay, eachDayOfInterval } from 'date-fns';
 import { userService } from '../services/api';
+import UserActivityChart from './UserActivityChart';
 
 ChartJS.register(
   CategoryScale,
@@ -228,6 +229,11 @@ const DashboardCharts: React.FC = () => {
           </Paper>
         </Grid>
 
+        {/* User Activity Pie Chart */}
+        <Grid item xs={12} md={6}>
+          <UserActivityChart />
+        </Grid>
+
         {/* Time Range Selector */}
         <Grid item xs={12}>
           <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
@@ -265,27 +271,23 @@ const DashboardCharts: React.FC = () => {
           </Box>
         </Grid>
 
-        {/* User Activity Line Chart */}
-        <Grid item xs={12}>
-          <Paper sx={{ p: 2 }}>
+        {/* Line Chart */}
+        <Grid item xs={12} md={8}>
+          <Paper sx={{ p: 2, height: 400 }}>
             <Typography variant="h6" gutterBottom>
               User Activity Over Time
             </Typography>
-            <Box sx={{ height: 400 }}>
-              <Line data={lineChartData} options={chartOptions} />
-            </Box>
+            <Line data={lineChartData} options={chartOptions} />
           </Paper>
         </Grid>
 
-        {/* New Users Bar Chart */}
-        <Grid item xs={12}>
-          <Paper sx={{ p: 2 }}>
+        {/* Bar Chart */}
+        <Grid item xs={12} md={4}>
+          <Paper sx={{ p: 2, height: 400 }}>
             <Typography variant="h6" gutterBottom>
-              New Users Distribution
+              New User Registrations
             </Typography>
-            <Box sx={{ height: 400 }}>
-              <Bar data={barChartData} options={chartOptions} />
-            </Box>
+            <Bar data={barChartData} options={chartOptions} />
           </Paper>
         </Grid>
       </Grid>
