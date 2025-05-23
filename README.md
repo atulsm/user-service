@@ -220,3 +220,93 @@ The following test users are available in the test database:
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
+## Performance
+
+The service has been load tested using `wrk` with the following results:
+
+```bash
+$ wrk -t1 -c8 -d15 --latency http://localhost:8080/users
+Running 15s test @ http://localhost:8080/users
+  1 threads and 8 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency     0.99ms    2.36ms  38.97ms   90.89%
+    Req/Sec    23.10k     1.87k   25.70k    84.11%
+  Latency Distribution
+     50%  288.00us
+     75%  375.00us
+     90%    2.91ms
+     99%   11.50ms
+  347064 requests in 15.10s, 470.66MB read
+Requests/sec:  22981.57
+Transfer/sec:     31.17MB
+```
+
+### Key Performance Metrics
+- Average Latency: 0.99ms
+- Requests per Second: 22,981
+- 99th Percentile Latency: 11.50ms
+- Throughput: 31.17MB/s
+
+## Getting Started
+
+### Prerequisites
+- Go 1.21 or later
+- Node.js 18 or later
+- PostgreSQL 14 or later
+
+### Installation
+
+1. Clone the repository:
+```bash
+git clone https://github.com/yourusername/user-service.git
+cd user-service
+```
+
+2. Set up the backend:
+```bash
+cd internal
+go mod download
+go run cmd/server/main.go
+```
+
+3. Set up the frontend:
+```bash
+cd web
+npm install
+npm start
+```
+
+The application will be available at:
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:8080
+
+## API Documentation
+
+### Authentication Endpoints
+
+- `POST /api/v1/auth/register` - Register a new user
+- `POST /api/v1/auth/login` - Login user
+- `POST /api/v1/auth/logout` - Logout user
+
+### User Endpoints
+
+- `GET /api/v1/users` - Get all users
+- `GET /api/v1/users/:id` - Get user by ID
+- `POST /api/v1/users` - Create new user
+- `PUT /api/v1/users/:id` - Update user
+- `DELETE /api/v1/users/:id` - Delete user
+- `GET /api/v1/users/profile` - Get current user profile
+- `PUT /api/v1/users/profile` - Update current user profile
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
