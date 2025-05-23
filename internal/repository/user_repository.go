@@ -1,14 +1,15 @@
 package repository
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 	"log"
 	"net/url"
 	"time"
 
-	"atulsm/userservice/internal/models"
-	"atulsm/userservice/pkg/utils"
+	"github.com/atulsm/user-service/internal/models"
+	"github.com/atulsm/user-service/pkg/utils"
 
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
@@ -24,6 +25,7 @@ type UserRepository interface {
 	DeleteUser(id uuid.UUID) error
 	Close() error
 	UpdatePassword(id uuid.UUID, passwordHash string) error
+	GetUsers(ctx context.Context, page, pageSize int) ([]*models.User, int, error)
 }
 
 type PostgresUserRepository struct {
@@ -224,4 +226,20 @@ func (r *PostgresUserRepository) UpdatePassword(id uuid.UUID, passwordHash strin
 		WHERE id = $2
 	`, passwordHash, id)
 	return err
+}
+
+func (r *PostgresUserRepository) GetUsers(ctx context.Context, page, pageSize int) ([]*models.User, int, error) {
+	offset := (page - 1) * pageSize
+	users, err := r.ListUsers(pageSize, offset)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	var total int
+	err = r.db.Get(&total, "SELECT COUNT(*) FROM users")
+	if err != nil {
+		return nil, 0, err
+	}
+
+	return users, total, nil
 }

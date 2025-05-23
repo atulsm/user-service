@@ -6,8 +6,8 @@ import (
 	"strconv"
 	"strings"
 
-	"atulsm/userservice/internal/models"
-	"atulsm/userservice/internal/repository"
+	"github.com/atulsm/user-service/internal/models"
+	"github.com/atulsm/user-service/internal/repository"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"

@@ -40,6 +40,8 @@ func SetupRouter() (*gin.Engine, error) {
 	router.POST("/api/v1/auth/register", userHandler.Register)
 	router.POST("/api/v1/auth/login", userHandler.Login)
 	router.POST("/api/v1/auth/reset-password", userHandler.ResetPassword)
+	router.GET("/users/:id", userHandler.GetUser)
+	router.GET("/users", userHandler.ListUsers)
 
 	// Protected routes
 	authorized := router.Group("/api/v1")
@@ -49,7 +51,6 @@ func SetupRouter() (*gin.Engine, error) {
 		authorized.PUT("/users/profile", userHandler.UpdateProfile)
 		authorized.GET("/users", userHandler.ListUsers)
 		authorized.POST("/users", userHandler.CreateUser)
-		authorized.GET("/users/:id", userHandler.GetUser)
 		authorized.PUT("/users/:id", userHandler.UpdateUser)
 		authorized.DELETE("/users/:id", userHandler.DeleteUser)
 		authorized.POST("/auth/logout", userHandler.Logout)

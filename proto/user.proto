@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package user;
+
+option go_package = "github.com/atulsm/user-service/proto";
+
+// User service definition
+service UserService {
+  // GetUsers returns a list of users with pagination
+  rpc GetUsers(GetUsersRequest) returns (GetUsersResponse) {}
+}
+
+// GetUsersRequest represents the request for getting users
+message GetUsersRequest {
+  int32 page = 1;
+  int32 page_size = 2;
+}
+
+// GetUsersResponse represents the response containing users
+message GetUsersResponse {
+  repeated User users = 1;
+  int32 total = 2;
+  int32 page = 3;
+  int32 page_size = 4;
+}
+
+// User represents a user in the system
+message User {
+  string id = 1;
+  string email = 2;
+  string first_name = 3;
+  string last_name = 4;
+  string phone_number = 5;
+  string created_at = 6;
+  string updated_at = 7;
+} 
