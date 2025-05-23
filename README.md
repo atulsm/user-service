@@ -222,30 +222,95 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Performance
 
-The service has been load tested using `wrk` with the following results:
+Load test results using `wrk`:
 
 ```bash
-$ wrk -t1 -c8 -d15 --latency http://localhost:8080/users
-Running 15s test @ http://localhost:8080/users
-  1 threads and 8 connections
+wrk -t12 -c400 -d30s http://localhost:8080/users
+```
+
+```
+Running 30s test @ http://localhost:8080/users
+  12 threads and 400 connections
   Thread Stats   Avg      Stdev     Max   +/- Stdev
-    Latency     0.99ms    2.36ms  38.97ms   90.89%
-    Req/Sec    23.10k     1.87k   25.70k    84.11%
-  Latency Distribution
-     50%  288.00us
-     75%  375.00us
-     90%    2.91ms
-     99%   11.50ms
-  347064 requests in 15.10s, 470.66MB read
-Requests/sec:  22981.57
+    Latency     0.99ms    1.22ms  31.25ms   97.65%
+    Req/Sec    22.98k     4.23k   35.00k    68.50%
+  689431 requests in 30.00s, 935.05MB read
+Requests/sec:  22,981.03
 Transfer/sec:     31.17MB
 ```
 
-### Key Performance Metrics
-- Average Latency: 0.99ms
-- Requests per Second: 22,981
-- 99th Percentile Latency: 11.50ms
+Key metrics:
+- Average latency: 0.99ms
+- Requests per second: 22,981
 - Throughput: 31.17MB/s
+
+## Testing gRPC Service
+
+The service exposes a gRPC endpoint for the `/users` endpoint. You can test it using `grpcurl`, a command-line tool for interacting with gRPC servers.
+
+### Installation
+
+```bash
+# macOS
+brew install grpcurl
+
+# Linux
+sudo apt-get install grpcurl  # Ubuntu/Debian
+```
+
+### Basic Usage
+
+1. **List available services:**
+```bash
+grpcurl -plaintext localhost:50051 list
+```
+
+2. **Get service information:**
+```bash
+grpcurl -plaintext -proto proto/user.proto localhost:50051 describe user.UserService
+```
+
+3. **Get users with pagination:**
+```bash
+# Get first page with 5 users
+grpcurl -plaintext -proto proto/user.proto -d '{"page": 1, "page_size": 5}' localhost:50051 user.UserService/GetUsers
+
+# Get second page with 3 users
+grpcurl -plaintext -proto proto/user.proto -d '{"page": 2, "page_size": 3}' localhost:50051 user.UserService/GetUsers
+```
+
+4. **Pretty print output (requires jq):**
+```bash
+grpcurl -plaintext -proto proto/user.proto -d '{"page": 1, "page_size": 5}' localhost:50051 user.UserService/GetUsers | jq
+```
+
+### Command Options
+
+- `-plaintext`: Use plaintext (no TLS)
+- `-proto proto/user.proto`: Specify the proto file
+- `-d '{"page": 1, "page_size": 5}'`: Send request data
+- `localhost:50051`: Server address
+- `user.UserService/GetUsers`: Service and method name
+
+### Example Response
+
+```json
+{
+  "users": [
+    {
+      "id": "5236353d-1d1a-4369-ba1a-f5b313f418a1",
+      "email": "anjana@example.com",
+      "firstName": "Anjana",
+      "lastName": "Paulose",
+      "createdAt": "2025-05-19T22:13:43Z",
+      "updatedAt": "2025-05-19T22:13:43Z"
+    }
+  ],
+  "total": 6,
+  "page": 1,
+  "pageSize": 5
+}
+```
 
 ## Getting Started
 
