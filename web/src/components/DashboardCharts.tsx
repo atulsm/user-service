@@ -27,6 +27,29 @@ import { format, subDays, startOfDay, endOfDay, eachDayOfInterval } from 'date-f
 import { userService } from '../services/api';
 import UserActivityChart from './UserActivityChart';
 
+// Uber's color palette
+const uberColors = {
+  primary: '#000000',
+  secondary: '#6B6B6B',
+  accent: '#000000',
+  background: '#FFFFFF',
+  success: '#00A870',
+  warning: '#FFB800',
+  error: '#FF3B30',
+  info: '#007AFF',
+  gray: {
+    100: '#F7F7F7',
+    200: '#E5E5E5',
+    300: '#D4D4D4',
+    400: '#A3A3A3',
+    500: '#737373',
+    600: '#525252',
+    700: '#404040',
+    800: '#262626',
+    900: '#171717',
+  }
+};
+
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -141,16 +164,18 @@ const DashboardCharts: React.FC = () => {
       {
         label: 'Active Users',
         data: userActivity.map(item => item.activeUsers),
-        borderColor: '#8884d8',
-        backgroundColor: 'rgba(136, 132, 216, 0.5)',
+        borderColor: uberColors.primary,
+        backgroundColor: 'rgba(0, 0, 0, 0.1)',
         tension: 0.4,
+        borderWidth: 2,
       },
       {
         label: 'New Users',
         data: userActivity.map(item => item.newUsers),
-        borderColor: '#82ca9d',
-        backgroundColor: 'rgba(130, 202, 157, 0.5)',
+        borderColor: uberColors.success,
+        backgroundColor: 'rgba(0, 168, 112, 0.1)',
         tension: 0.4,
+        borderWidth: 2,
       },
     ],
   };
@@ -161,7 +186,8 @@ const DashboardCharts: React.FC = () => {
       {
         label: 'New Users',
         data: userActivity.map(item => item.newUsers),
-        backgroundColor: 'rgba(130, 202, 157, 0.8)',
+        backgroundColor: uberColors.primary,
+        borderRadius: 4,
       },
     ],
   };
@@ -172,8 +198,23 @@ const DashboardCharts: React.FC = () => {
     plugins: {
       legend: {
         position: 'top' as const,
+        labels: {
+          font: {
+            family: 'UberMove, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+            size: 12,
+          },
+          color: uberColors.gray[800],
+          padding: 20,
+        },
       },
       tooltip: {
+        backgroundColor: uberColors.background,
+        titleColor: uberColors.primary,
+        bodyColor: uberColors.gray[800],
+        borderColor: uberColors.gray[200],
+        borderWidth: 1,
+        padding: 12,
+        boxPadding: 6,
         callbacks: {
           label: function(context: any) {
             let label = context.dataset.label || '';
@@ -191,41 +232,88 @@ const DashboardCharts: React.FC = () => {
     scales: {
       y: {
         beginAtZero: true,
+        grid: {
+          color: uberColors.gray[100],
+        },
         ticks: {
+          color: uberColors.gray[600],
+          font: {
+            family: 'UberMove, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+            size: 12,
+          },
           callback: function(value: any) {
             return value.toLocaleString();
           }
+        }
+      },
+      x: {
+        grid: {
+          display: false,
+        },
+        ticks: {
+          color: uberColors.gray[600],
+          font: {
+            family: 'UberMove, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+            size: 12,
+          },
         }
       },
     },
   };
 
   return (
-    <Box sx={{ flexGrow: 1, p: 3 }}>
+    <Box sx={{ flexGrow: 1, p: 3, backgroundColor: uberColors.gray[100] }}>
       <Grid container spacing={3}>
         {/* Stats Cards */}
         <Grid item xs={12} md={4}>
-          <Paper sx={{ p: 2, textAlign: 'center' }}>
-            <Typography variant="h6" color="text.secondary">
+          <Paper sx={{ 
+            p: 3, 
+            textAlign: 'center',
+            borderRadius: '12px',
+            boxShadow: 'none',
+            border: `1px solid ${uberColors.gray[200]}`,
+            backgroundColor: uberColors.background,
+          }}>
+            <Typography variant="h6" sx={{ color: uberColors.gray[600], mb: 1 }}>
               Total Users
             </Typography>
-            <Typography variant="h4">{userStats.totalUsers.toLocaleString()}</Typography>
+            <Typography variant="h4" sx={{ color: uberColors.primary, fontWeight: 500 }}>
+              {userStats.totalUsers.toLocaleString()}
+            </Typography>
           </Paper>
         </Grid>
         <Grid item xs={12} md={4}>
-          <Paper sx={{ p: 2, textAlign: 'center' }}>
-            <Typography variant="h6" color="text.secondary">
+          <Paper sx={{ 
+            p: 3, 
+            textAlign: 'center',
+            borderRadius: '12px',
+            boxShadow: 'none',
+            border: `1px solid ${uberColors.gray[200]}`,
+            backgroundColor: uberColors.background,
+          }}>
+            <Typography variant="h6" sx={{ color: uberColors.gray[600], mb: 1 }}>
               Active Users
             </Typography>
-            <Typography variant="h4">{userStats.activeUsers.toLocaleString()}</Typography>
+            <Typography variant="h4" sx={{ color: uberColors.primary, fontWeight: 500 }}>
+              {userStats.activeUsers.toLocaleString()}
+            </Typography>
           </Paper>
         </Grid>
         <Grid item xs={12} md={4}>
-          <Paper sx={{ p: 2, textAlign: 'center' }}>
-            <Typography variant="h6" color="text.secondary">
+          <Paper sx={{ 
+            p: 3, 
+            textAlign: 'center',
+            borderRadius: '12px',
+            boxShadow: 'none',
+            border: `1px solid ${uberColors.gray[200]}`,
+            backgroundColor: uberColors.background,
+          }}>
+            <Typography variant="h6" sx={{ color: uberColors.gray[600], mb: 1 }}>
               New Users
             </Typography>
-            <Typography variant="h4">{userStats.newUsers.toLocaleString()}</Typography>
+            <Typography variant="h4" sx={{ color: uberColors.primary, fontWeight: 500 }}>
+              {userStats.newUsers.toLocaleString()}
+            </Typography>
           </Paper>
         </Grid>
 
@@ -236,45 +324,103 @@ const DashboardCharts: React.FC = () => {
 
         {/* Time Range Selector */}
         <Grid item xs={12}>
-          <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
-            <FormControl sx={{ minWidth: 120 }}>
-              <InputLabel>Time Range</InputLabel>
-              <Select
-                value={timeRange}
-                label="Time Range"
-                onChange={handleTimeRangeChange}
-              >
-                <MenuItem value="7d">Last 7 Days</MenuItem>
-                <MenuItem value="30d">Last 30 Days</MenuItem>
-                <MenuItem value="90d">Last 90 Days</MenuItem>
-                <MenuItem value="custom">Custom Range</MenuItem>
-              </Select>
-            </FormControl>
-            {timeRange === 'custom' && (
-              <>
-                <TextField
-                  label="Start Date"
-                  type="date"
-                  value={format(startDate, 'yyyy-MM-dd')}
-                  onChange={handleStartDateChange}
-                  InputLabelProps={{ shrink: true }}
-                />
-                <TextField
-                  label="End Date"
-                  type="date"
-                  value={format(endDate, 'yyyy-MM-dd')}
-                  onChange={handleEndDateChange}
-                  InputLabelProps={{ shrink: true }}
-                />
-              </>
-            )}
-          </Box>
+          <Paper sx={{ 
+            p: 2, 
+            borderRadius: '12px',
+            boxShadow: 'none',
+            border: `1px solid ${uberColors.gray[200]}`,
+            backgroundColor: uberColors.background,
+          }}>
+            <Box sx={{ display: 'flex', gap: 2 }}>
+              <FormControl sx={{ minWidth: 120 }}>
+                <InputLabel sx={{ color: uberColors.gray[600] }}>Time Range</InputLabel>
+                <Select
+                  value={timeRange}
+                  label="Time Range"
+                  onChange={handleTimeRangeChange}
+                  sx={{
+                    '& .MuiOutlinedInput-notchedOutline': {
+                      borderColor: uberColors.gray[200],
+                    },
+                    '&:hover .MuiOutlinedInput-notchedOutline': {
+                      borderColor: uberColors.gray[300],
+                    },
+                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                      borderColor: uberColors.primary,
+                    },
+                  }}
+                >
+                  <MenuItem value="7d">Last 7 Days</MenuItem>
+                  <MenuItem value="30d">Last 30 Days</MenuItem>
+                  <MenuItem value="90d">Last 90 Days</MenuItem>
+                  <MenuItem value="custom">Custom Range</MenuItem>
+                </Select>
+              </FormControl>
+              {timeRange === 'custom' && (
+                <>
+                  <TextField
+                    label="Start Date"
+                    type="date"
+                    value={format(startDate, 'yyyy-MM-dd')}
+                    onChange={handleStartDateChange}
+                    InputLabelProps={{ 
+                      shrink: true,
+                      sx: { color: uberColors.gray[600] }
+                    }}
+                    sx={{
+                      '& .MuiOutlinedInput-notchedOutline': {
+                        borderColor: uberColors.gray[200],
+                      },
+                      '&:hover .MuiOutlinedInput-notchedOutline': {
+                        borderColor: uberColors.gray[300],
+                      },
+                      '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                        borderColor: uberColors.primary,
+                      },
+                    }}
+                  />
+                  <TextField
+                    label="End Date"
+                    type="date"
+                    value={format(endDate, 'yyyy-MM-dd')}
+                    onChange={handleEndDateChange}
+                    InputLabelProps={{ 
+                      shrink: true,
+                      sx: { color: uberColors.gray[600] }
+                    }}
+                    sx={{
+                      '& .MuiOutlinedInput-notchedOutline': {
+                        borderColor: uberColors.gray[200],
+                      },
+                      '&:hover .MuiOutlinedInput-notchedOutline': {
+                        borderColor: uberColors.gray[300],
+                      },
+                      '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                        borderColor: uberColors.primary,
+                      },
+                    }}
+                  />
+                </>
+              )}
+            </Box>
+          </Paper>
         </Grid>
 
         {/* Line Chart */}
         <Grid item xs={12} md={8}>
-          <Paper sx={{ p: 2, height: 400 }}>
-            <Typography variant="h6" gutterBottom>
+          <Paper sx={{ 
+            p: 3, 
+            height: 400,
+            borderRadius: '12px',
+            boxShadow: 'none',
+            border: `1px solid ${uberColors.gray[200]}`,
+            backgroundColor: uberColors.background,
+          }}>
+            <Typography variant="h6" sx={{ 
+              color: uberColors.primary,
+              mb: 3,
+              fontWeight: 500,
+            }}>
               User Activity Over Time
             </Typography>
             <Line data={lineChartData} options={chartOptions} />
@@ -283,8 +429,19 @@ const DashboardCharts: React.FC = () => {
 
         {/* Bar Chart */}
         <Grid item xs={12} md={4}>
-          <Paper sx={{ p: 2, height: 400 }}>
-            <Typography variant="h6" gutterBottom>
+          <Paper sx={{ 
+            p: 3, 
+            height: 400,
+            borderRadius: '12px',
+            boxShadow: 'none',
+            border: `1px solid ${uberColors.gray[200]}`,
+            backgroundColor: uberColors.background,
+          }}>
+            <Typography variant="h6" sx={{ 
+              color: uberColors.primary,
+              mb: 3,
+              fontWeight: 500,
+            }}>
               New User Registrations
             </Typography>
             <Bar data={barChartData} options={chartOptions} />

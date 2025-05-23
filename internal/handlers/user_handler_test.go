@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"bytes"
+	"context"
 	"database/sql"
 	"encoding/json"
 	"errors"
@@ -10,7 +11,7 @@ import (
 	"testing"
 	"time"
 
-	"atulsm/userservice/internal/models"
+	"github.com/atulsm/user-service/internal/models"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -48,6 +49,7 @@ func (m *MockPasswordHasher) HashPassword(password string) (string, error) {
 // MockUserRepository is a mock implementation of UserRepository
 type MockUserRepository struct {
 	mock.Mock
+	users []*models.User
 }
 
 func (m *MockUserRepository) Close() error {
@@ -103,6 +105,18 @@ func (m *MockUserRepository) DeleteUser(id uuid.UUID) error {
 func (m *MockUserRepository) UpdatePassword(id uuid.UUID, newPassword string) error {
 	args := m.Called(id, newPassword)
 	return args.Error(0)
+}
+
+func (m *MockUserRepository) GetUsers(ctx context.Context, page, pageSize int) ([]*models.User, int, error) {
+	start := (page - 1) * pageSize
+	end := start + pageSize
+	if start >= len(m.users) {
+		return []*models.User{}, len(m.users), nil
+	}
+	if end > len(m.users) {
+		end = len(m.users)
+	}
+	return m.users[start:end], len(m.users), nil
 }
 
 func TestRegister(t *testing.T) {

@@ -1,4 +1,4 @@
-package api_test
+package api
 
 import (
 	"bytes"
@@ -9,8 +9,8 @@ import (
 	"os"
 	"testing"
 
-	"atulsm/userservice/internal/models"
-	"atulsm/userservice/internal/server"
+	"github.com/atulsm/user-service/internal/models"
+	"github.com/atulsm/user-service/internal/server"
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"

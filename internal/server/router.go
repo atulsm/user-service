@@ -1,11 +1,11 @@
 package server
 
 import (
-	"atulsm/userservice/internal/config"
-	"atulsm/userservice/internal/handlers"
-	"atulsm/userservice/internal/middleware"
-	"atulsm/userservice/internal/repository"
-	"atulsm/userservice/pkg/utils"
+	"github.com/atulsm/user-service/internal/config"
+	"github.com/atulsm/user-service/internal/handlers"
+	"github.com/atulsm/user-service/internal/middleware"
+	"github.com/atulsm/user-service/internal/repository"
+	"github.com/atulsm/user-service/pkg/utils"
 
 	"github.com/gin-gonic/gin"
 )
