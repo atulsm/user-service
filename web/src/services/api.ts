@@ -67,6 +67,23 @@ export interface UpdateUserRequest {
   phoneNumber?: string;
 }
 
+interface UserActivity {
+  date: string;
+  newUsers: number;
+  activeUsers: number;
+}
+
+interface UserStats {
+  totalUsers: number;
+  activeUsers: number;
+  newUsers: number;
+}
+
+interface UserActivityParams {
+  startDate: string;
+  endDate: string;
+}
+
 export const authService = {
   login: async (data: LoginRequest) => {
     const response = await api.post('/auth/login', data);
@@ -101,4 +118,6 @@ export const userService = {
   getProfile: () => api.get<User>('/users/profile').then((res) => res.data),
   updateProfile: (data: UpdateUserRequest) =>
     api.put<User>('/users/profile', data).then((res) => res.data),
+  getUserActivity: (params: UserActivityParams) => api.get<UserActivity[]>('/users/activity', { params }),
+  getUserStats: () => api.get<UserStats>('/users/stats'),
 }; 
