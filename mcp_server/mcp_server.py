@@ -3,6 +3,7 @@ from pydantic import BaseModel
 import requests
 from typing import Optional, List
 import uvicorn
+from difflib import SequenceMatcher
 
 app = FastAPI(title="Name Guessing MCP Server")
 
@@ -21,6 +22,10 @@ class GuessResponse(BaseModel):
     lastName: str
     confidence: float
 
+def calculate_similarity(str1: str, str2: str) -> float:
+    """Calculate similarity ratio between two strings."""
+    return SequenceMatcher(None, str1.lower(), str2.lower()).ratio()
+
 @app.get("/")
 async def root():
     return {"message": "Name Guessing MCP Server is running"}
@@ -33,16 +38,24 @@ async def guess_last_name(request: GuessRequest):
         response.raise_for_status()
         users = response.json()
 
-        # Find the user with matching first name
-        matching_users = [user for user in users if user["firstName"].lower() == request.firstName.lower()]
+        # Find users with partial matches
+        matches = []
+        for user in users:
+            similarity = calculate_similarity(request.firstName, user["firstName"])
+            if similarity > 0.5:  # Threshold for considering a match
+                matches.append((user, similarity))
+
+        if not matches:
+            raise HTTPException(status_code=404, detail=f"No user found with first name similar to: {request.firstName}")
         
-        if not matching_users:
-            raise HTTPException(status_code=404, detail=f"No user found with first name: {request.firstName}")
+        # Sort matches by similarity score
+        matches.sort(key=lambda x: x[1], reverse=True)
         
-        # Return the last name with 100% confidence since we have exact match
+        # Return the best match
+        best_match, confidence = matches[0]
         return GuessResponse(
-            lastName=matching_users[0]["lastName"],
-            confidence=1.0
+            lastName=best_match["lastName"],
+            confidence=confidence
         )
 
     except requests.RequestException as e:
