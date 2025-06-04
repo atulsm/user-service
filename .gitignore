@@ -25,3 +25,8 @@ go.work.sum
 .env
 
 userservice
+
+# Python virtual environment
+venv/
+__pycache__/
+*.pyc
