@@ -132,6 +132,7 @@ go build -o userservice ./cmd/server
 
 # Run the service
 ./userservice
+GIN_MODE=debug go run cmd/server/main.go
 ```
 
 ## 🔍 API Endpoints
